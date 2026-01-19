@@ -75,10 +75,10 @@ int main(void){
 
   vector<double> normalized_score(NUM_GENES, 0.0);
   for(int i = 0; i < NUM_GENES; i++){
-    double mu = tpm_mean[i];
+    double mu = tpm_mean[i];//// 平均値
     double var = 0.0;
     for(int j = 0; j < NUM_TISSUES; j++){
-      var += pow(expression_matrix[i][j] - mu, 2);
+      var += pow(expression_matrix[i][j] - mu, 2);//べき乗pow (底,乗数)
     }
     var /= NUM_TISSUES;
     normalized_score[i] = mu /(sqrt(var)+EPS);
