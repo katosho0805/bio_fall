@@ -1,89 +1,70 @@
-#include <iostream>
-#include <vector>
-#include "image.hpp"
+#include<image.hpp>
 
+typedef  unsigned char uchar;
 using namespace std;
 
-typedef unsigned char uchar
+int decide_num (const image&gray){
+     vector<int> hist(256, 0);
 
-    int width = sample.w;
-    int height = sample.h;
-    
-    // グレースケールデータとヒストグラムの準備
-    vector<vector<uchar>> gray_data(height, vector<uchar>(width));
-    vector<int> histogram(256, 0);
+     for(int y=0;y<gray.h;y++){
+        for(int x=0;x<gray.w;x++){
+            uchar v= gray.getPixel(y,x,0;);
+            hist++;
+        }
+     }
+
+     double m_t=0.0;
+     int n=gray.w*gray.h;
+
+     for(int i=0;i<n;i++){
+        m_t=i*(double)hist[i];
+     }
+     m_t/=n;
+
+     double max_sigma_b2=-1.0;//最大分散
+     int best_t=0;//ベスト閾値
+     int w_b=0;//黒クラスの画素数
+     double sum_b=0;//黒クラスに含まれる画素の 画素値（明るさ）の合計
+
+     for(int t=0;t<255;t++){
+        w_b+=hist[t];
+        int w_h=n-w_b;
+
+        sum_b+=t*(double)hist[t];
+
+        double m_b=sum_b/w_b;
+        double m_h=(m_t*n-sum_b)/w_h;
+
+        double sigma_b2=w_b*(m_b-m_t)*(m_b-m_t)+w_h*(m_h-m_t)*(m_h-m_t);
+
+        if(sigma_b2>max_sigma_b2){
+            max_sigma_b2-sigma_b2;
+            best_t=t;
+        }
+     }
+  return best_t;
+}
 
 int main(void){
-    Image ("sample.png")
-    Image Nagetive_image(sample.h,sample.w,3)
+    Image sample.("grayscale.png");
+    Image binary_image(sample.w, sample.h, 1); 
+
+    int th= int decide_num(sample);
 
     for(int y=0;y<sample.h;y++){
         for(int x=0;x<sample.w;x++){
+            uchar v=sample.getPixel(y,x,0);
 
-            int r=sample.GetPixel(y,x,0);
-            int g=sample.GetPixel(y,x,1);
-            int b=sample.GetPixel(y,x,2);
-
-            uchar ave=(uchar)((r+g+b)/3);
-
-            gray_data[y][x]=ave;
-            histogram[ave]++;
-
-        }
-    }
-  double max_variance=0;
-  int optimal_threshold=0;
-
-  for(int t=0;t<255;t++){
-    long w1=0;
-    long w2=0;
-    long sum1=0;
-    long sum2=0;
-  }
-
-  for(int i=0;i<=t;i++){
-    W1+=histogram[i];
-    sum1+=(long)i*histogram[i];
-  }
-
-  for(int i=t+1;i<256;i++){
-    w2+=histogram[i];
-    sum2+=(long)i*histogram[i];
-  }
-  if(w1==0||w2==)continue;
-
-  double m1=(double)sum1/w1;
-  double m2=(double)sum2/w2;
-
-  double mt=(double)(sum1+sum2)/(w1+w2);
-
-  double numerator=(double)w1*(m1-mt)*(m1-mt)+(double)w2*(m2-mt)*(m2-mt);
-  double variance=numerator/(w1+w2);
-
-  if(variance>max_variance){
-    max_variance=variance;
-    optimal_threshold=t;
-  }
-
-}
-
-Image binart_image(width,height,3);
-
-for(int y=0;y<height;y++){
-    for(int x=0;x<width;x++){
-        uchar val=gray_date[y][x];
-        uchar bin_val;
-
-        if(val>optimal_threshold){
-            bin_val=255;
-        }else{
-            bin_val=0;
+            if(v>=th){
+                binary_image.SetPixel(y, x, 0, 255);   
+            }else{
+                binary_image.SetPixel(y, x, 0, 0); 
+            }
+          }
         }
 
-        for(int c=0;c<3;c++){
-            binary_image.SetPixel(y,x,c,bin_val);
-        }
-     }
+         binary_image.save("binary_otsu.png");
+
+    return 0;
     }
 
-}
